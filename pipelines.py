@@ -5,7 +5,6 @@ from base64 import b64decode
 from keys import Key
 from emoji import Emoji
 
-
 class TwitterPipeline(object):
     tweet_sent = False
 
@@ -15,7 +14,7 @@ class TwitterPipeline(object):
         return item
 
     def get_twitter_session(self):
-        kms = boto3.client('kms')
+        kms = boto3.client('kms', region_name=Key.AWS_REGION.value)
         consumer_key = kms.decrypt(CiphertextBlob = b64decode(Key.ENCRYPTED_TWITTER_CONSUMER_KEY.value))['Plaintext']
         consumer_secret = kms.decrypt(CiphertextBlob = b64decode(Key.ENCRYPTRD_TWITTER_COMSUMER_SECRET.value))['Plaintext']
         access_token = kms.decrypt(CiphertextBlob = b64decode(Key.ENCRYPTED_TWITTER_ACCESS_TOKEN.value))['Plaintext']
