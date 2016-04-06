@@ -8,7 +8,7 @@ from base64 import b64decode
 from keys import Key
 
 RAW_OPEN_WEATHER_URL = 'http://api.openweathermap.org/data/2.5/weather?zip=60614,us&units=Imperial&APPID=%s'
-kms = boto3.client('kms')
+kms = boto3.client('kms', region_name=Key.AWS_REGION.value)
 
 class NOAASpider(scrapy.Spider):
     name = 'noaaspider'
