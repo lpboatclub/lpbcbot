@@ -7,7 +7,7 @@ from datetime import datetime
 from base64 import b64decode
 from keys import Key
 
-RAW_OPEN_WEATHER_URL = 'http://api.openweathermap.org/data/2.5/weather?id=4887398&units=Imperial&APPID=%s'
+RAW_OPEN_WEATHER_URL = 'http://api.openweathermap.org/data/2.5/weather?zip=60614,us&units=Imperial&APPID=%s'
 kms = boto3.client('kms')
 
 class NOAASpider(scrapy.Spider):
