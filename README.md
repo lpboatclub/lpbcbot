@@ -4,10 +4,12 @@
     sudo usermod -a -G sudo pyuser
     
 2. Create `/opt/python` directory and take ownership
+
 ```bash
     sudo mkdir -p /opt/python
     sudo chown pyuser python
 ```
+
 3. Download lpbcbot project
 
     `git clone https://github.com/mikeblum/lpbcbot.git`
@@ -40,6 +42,7 @@
     . ./setenv.sh && python main.py
     
 9. Configure cron as pyuser:
+
 ```bash
     sudo crontab -u pyuser -e
     # run every day at 7 AM and 4 PM
