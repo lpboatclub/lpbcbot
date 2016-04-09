@@ -1,7 +1,7 @@
 Building for AWS Lambda
 
 1. deploy an EC2 micro instance of Amazon Linux (yum-flavored)
-2. install the following dependendencies
+2. install the following dependencies
 	
 	sudo yum groupinstall -y development
     sudo yum install -y git gcc libxml2 libxml2-devel libxslt libxslt-devel python-devel sudo easy_install lxml
