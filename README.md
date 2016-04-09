@@ -38,3 +38,10 @@
 8. Run script manually:
 
     . ./setenv.sh && python main.py
+    
+9. Configure cron as pyuser:
+```bash
+    sudo crontab -u pyuser -e
+    # run every day at 7 AM and 4 PM
+    0 7,16 *   *   *     . ./setenv.sh && python main.py
+```
