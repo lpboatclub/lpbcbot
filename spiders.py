@@ -1,22 +1,18 @@
+import os
 import re
 import json
 import unicodedata
 import scrapy
-import boto3
 from datetime import datetime
-from base64 import b64decode
-from keys import Key
 
 RAW_OPEN_WEATHER_URL = 'http://api.openweathermap.org/data/2.5/weather?zip=60614,us&units=Imperial&APPID=%s'
-kms = boto3.client('kms', region_name=Key.AWS_REGION.value)
 
 class NOAASpider(scrapy.Spider):
     name = 'noaaspider'
     start_urls = ['http://forecast.weather.gov/product.php?site=LOT&issuedby=LOT&product=OMR&format=txt&version=1&glossary=1']
 
     def open_weather_url(self):
-        open_weather_token = kms.decrypt(CiphertextBlob = b64decode(Key.ENCRYPTED_OPEN_WEATHER_TOKEN.value))['Plaintext']
-        return RAW_OPEN_WEATHER_URL % open_weather_token
+        return RAW_OPEN_WEATHER_URL % os.environ['OPEN_WEATHER_TOKEN']
 
     def parse(self, response):
         raw_text = response.css('.glossaryProduct').xpath('./text()')
@@ -36,7 +32,8 @@ class NOAASpider(scrapy.Spider):
         conditions['temp_high'] = json_response['main']['temp_min']
         conditions['temp_low'] = json_response['main']['temp_max']
         conditions['wind'] = json_response['wind']['speed']
-        conditions['wind_degs'] = json_response['wind']['deg']
+        try: conditions['wind_degs'] = json_response['wind']['deg']
+        except KeyError: conditions['wind_degs'] = 'N/A'
         conditions['weather'] = json_response['weather'][0]
         conditions['combined_air_water'] = float(conditions['temp']) + float(conditions['chicago_shore'])
         conditions['safe_to_row'] = conditions['combined_air_water'] >= 100

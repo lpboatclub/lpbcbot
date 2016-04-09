@@ -87,3 +87,4 @@ ENV/
 # Rope project settings
 .ropeproject
 lpbcbot-ec2-deployment-04-06-2016.zip
+setenv.sh
