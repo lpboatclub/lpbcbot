@@ -1,21 +1,40 @@
-Building for AWS Lambda
-
-1. deploy an EC2 micro instance of Amazon Linux (yum-flavored)
-2. install the following dependencies
-	
-	sudo yum groupinstall -y development
-    sudo yum install -y git gcc libxml2 libxml2-devel libxslt libxslt-devel python-devel sudo easy_install lxml
-
+1. Create `pyuser` and add to sudoers group
+    
+    sudo adduser pyuser
+    sudo usermod -a -G sudo pyuser
+    
+2. Create `/opt/python` directory and take ownership
+```bash
+    sudo mkdir -p /opt/python
+    sudo chown pyuser python
+```
 3. Download lpbcbot project
 
-    git clone https://github.com/mikeblum/lpbcbot.git
+    `git clone https://github.com/mikeblum/lpbcbot.git`
 
 4. Configure virtualenv
+ 
+    `virtualenv . && source ./bin/activate`
 
-    virtualenv env
-    source env/bin/activate
+5. Install system dependencies
 
-5. Pull down Python libraries
+    sudo apt-get install libxml2-dev libxslt1-dev python-dev	
 
-	pip install -r ./requirements.txt
+6. Pull down Python libraries
+	
+    pip install -r ./requirements.txt
 
+7. Crete ENV variables file `setenv.sh`:
+
+```bash
+    #!/bin/bash
+    export OPEN_WEATHER_TOKEN=
+    export TWITTER_CONSUMER_KEY=
+    export TWITTER_CONSUMER_SECRET=
+    export TWITTER_ACCESS_TOKEN=
+    export TWITTER_ACCESS_TOKEN_SECRET=
+```
+
+8. Run script manually:
+
+    . ./setenv.sh && python main.py
