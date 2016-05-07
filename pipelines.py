@@ -3,6 +3,7 @@ import json
 import time
 import sqlite3
 import tweepy
+import constants
 from emoji import Emoji
 
 class TwitterPipeline(object):
@@ -46,27 +47,43 @@ class TwitterPipeline(object):
 
 class ReplyTwitterPipeline(TwitterPipeline):
     def process_item(self, item, spider):
+        sql_session = self.get_sql_session()
         twitter_session = self.get_twitter_session()
         mentions = twitter_session.mentions_timeline()
         status = self.compose_status(item)
         for mention in mentions:
-            self.mark_as_replied_to(mention)
-            tweet_id = mention.id
-            print("Replying to @{user_name} with id {id}".format(
-                user_name=mention.user.screen_name,
-                id=mention.id
-            ))
-            reply = u"@{user_name} {status}".format(
-                user_name=mention.user.screen_name,
-                status=status
-            )
-            # twitter_session.update_status(reply, mention.id)
+            # check if we've already replied to this @mention
+            if not self.replied_to_mention(mention, sql_session):
+                reply = u"@{user_name} {status}".format(
+                    user_name=mention.user.screen_name,
+                    status=status
+                )
+                print("replying to {user_name}".format(user_name=mention.user.screen_name))
+                # twitter_session.update_status(reply, mention.id)
+        self.mark_mentions_as_replied_to(mentions, sql_session)
+        self.close_sql_session(sql_session)
         return item
 
-    # keep track of all tweets replied to
-    def mark_as_replied_to(self, mention):
-        data = dict()
-        data['user_name'] = mention.user.screen_name
-        data['user_id'] = mention.user.id
-        data['mention_id'] = mention.id
-        data['replied_at'] = time.strftime('%c')
+    def get_sql_session(self):
+        # creates a sqlite file if there isn;t one
+        return sqlite3.connect(constants.sqlite_file)
+
+    def close_sql_session(self, session):
+        # commit and close
+        session.commit()
+        session.close()
+
+    def replied_to_mention(self, mention, session):
+        c = session.cursor()
+        query = 'SELECT {col} FROM {tn} WHERE {col} = ?'\
+                .format(tn=constants.table_replies, col=constants.field_mention_id);
+        c.execute(query, (mention.id,))
+        result = c.fetchone()
+        return result is not None
+
+    # keep track of all tweets replied to in the DB
+    def mark_mentions_as_replied_to(self, mentions, session):
+        c = session.cursor()
+        for mention in mentions:
+            c.execute('INSERT OR IGNORE INTO {tn} ({col}) VALUES ({val})'\
+                    .format(tn=constants.table_replies, col=constants.field_mention_id, val=mention.id))
