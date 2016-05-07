@@ -1,5 +1,7 @@
 import os
 import json
+import time
+import sqlite3
 import tweepy
 from emoji import Emoji
 
@@ -48,6 +50,7 @@ class ReplyTwitterPipeline(TwitterPipeline):
         mentions = twitter_session.mentions_timeline()
         status = self.compose_status(item)
         for mention in mentions:
+            self.mark_as_replied_to(mention)
             tweet_id = mention.id
             print("Replying to @{user_name} with id {id}".format(
                 user_name=mention.user.screen_name,
@@ -58,5 +61,12 @@ class ReplyTwitterPipeline(TwitterPipeline):
                 status=status
             )
             # twitter_session.update_status(reply, mention.id)
-
         return item
+
+    # keep track of all tweets replied to
+    def mark_as_replied_to(self, mention):
+        data = dict()
+        data['user_name'] = mention.user.screen_name
+        data['user_id'] = mention.user.id
+        data['mention_id'] = mention.id
+        data['replied_at'] = time.strftime('%c')
