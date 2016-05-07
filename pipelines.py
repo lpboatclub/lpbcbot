@@ -59,7 +59,7 @@ class ReplyTwitterPipeline(TwitterPipeline):
                     status=status
                 )
                 print("replying to {user_name}".format(user_name=mention.user.screen_name))
-                # twitter_session.update_status(reply, mention.id)
+                twitter_session.update_status(reply, mention.id)
         self.mark_mentions_as_replied_to(mentions, sql_session)
         self.close_sql_session(sql_session)
         return item
