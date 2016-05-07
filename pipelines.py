@@ -41,3 +41,22 @@ class TwitterPipeline(object):
 
     def is_safe_to_row(self, safe_to_row):
         return Emoji.ROWING.value if safe_to_row else Emoji.NO_ROWING.value
+
+class ReplyTwitterPipeline(TwitterPipeline):
+    def process_item(self, item, spider):
+        twitter_session = self.get_twitter_session()
+        mentions = twitter_session.mentions_timeline()
+        status = self.compose_status(item)
+        for mention in mentions:
+            tweet_id = mention.id
+            print("Replying to @{user_name} with id {id}".format(
+                user_name=mention.user.screen_name,
+                id=mention.id
+            ))
+            reply = u"@{user_name} {status}".format(
+                user_name=mention.user.screen_name,
+                status=status
+            )
+            # twitter_session.update_status(reply, mention.id)
+
+        return item
