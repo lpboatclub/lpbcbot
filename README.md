@@ -1,8 +1,8 @@
 1\. Create `pyuser` and add to sudoers group
-    
+
     sudo adduser pyuser
     sudo usermod -a -G sudo pyuser
-    
+
 2\. Create `/opt/python` directory and take ownership
 
 ```bash
@@ -15,15 +15,15 @@
     `git clone https://github.com/mikeblum/lpbcbot.git`
 
 4\. Configure virtualenv
- 
+
     `virtualenv . && source ./bin/activate`
 
 5\. Install system dependencies
 
-    sudo apt-get install libxml2-dev libxslt1-dev python-dev	
+    sudo apt-get install libxml2-dev libxslt1-dev python-dev
 
 6\. Pull down Python libraries
-	
+
     pip install -r ./requirements.txt
 
 7\. Crete ENV variables file `setenv.sh`:
@@ -40,11 +40,13 @@
 8\. Run script manually:
 
     . ./setenv.sh && python main.py
-    
+
 9\. Configure cron as pyuser:
 
 ```bash
     sudo crontab -u pyuser -e
+    # reply to @mentions every two minutes
+    */2 * * * * cd /opt/python/lpbcbot && source setenv.sh && ./bin/python reply.py
     # run every day at 7 AM and 4 PM
-    0 7,16 *   *   *     . ./setenv.sh && python main.py
+    0 8,17 * * * cd /opt/python/lpbcbot && source setenv.sh && ./bin/python main.py     
 ```
