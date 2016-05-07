@@ -1,21 +1,50 @@
-Building for AWS Lambda
+1\. Create `pyuser` and add to sudoers group
+    
+    sudo adduser pyuser
+    sudo usermod -a -G sudo pyuser
+    
+2\. Create `/opt/python` directory and take ownership
 
-1. deploy an EC2 micro instance of Amazon Linux (yum-flavored)
-2. install the following dependencies
+```bash
+    sudo mkdir -p /opt/python
+    sudo chown pyuser python
+```
+
+3\. Download lpbcbot project
+
+    `git clone https://github.com/mikeblum/lpbcbot.git`
+
+4\. Configure virtualenv
+ 
+    `virtualenv . && source ./bin/activate`
+
+5\. Install system dependencies
+
+    sudo apt-get install libxml2-dev libxslt1-dev python-dev	
+
+6\. Pull down Python libraries
 	
-	sudo yum groupinstall -y development
-    sudo yum install -y git gcc libxml2 libxml2-devel libxslt libxslt-devel python-devel sudo easy_install lxml
+    pip install -r ./requirements.txt
 
-3. Download lpbcbot project
+7\. Crete ENV variables file `setenv.sh`:
 
-    git clone https://github.com/mikeblum/lpbcbot.git
+```bash
+    #!/bin/bash
+    export OPEN_WEATHER_TOKEN=
+    export TWITTER_CONSUMER_KEY=
+    export TWITTER_CONSUMER_SECRET=
+    export TWITTER_ACCESS_TOKEN=
+    export TWITTER_ACCESS_TOKEN_SECRET=
+```
 
-4. Configure virtualenv
+8\. Run script manually:
 
-    virtualenv env
-    source env/bin/activate
+    . ./setenv.sh && python main.py
+    
+9\. Configure cron as pyuser:
 
-5. Pull down Python libraries
-
-	pip install -r ./requirements.txt
-
+```bash
+    sudo crontab -u pyuser -e
+    # run every day at 7 AM and 4 PM
+    0 7,16 *   *   *     . ./setenv.sh && python main.py
+```
