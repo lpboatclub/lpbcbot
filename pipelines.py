@@ -1,6 +1,6 @@
 import os
 import json
-from twython import Twython
+import tweepy
 from emoji import Emoji
 
 class TwitterPipeline(object):
@@ -12,14 +12,16 @@ class TwitterPipeline(object):
         return item
 
     def get_twitter_session(self):
-        consumer_key = os.environ['TWITTER_CONSUMER_KEY']
-        consumer_secret = os.environ['TWITTER_CONSUMER_SECRET']
-        access_token = os.environ['TWITTER_ACCESS_TOKEN']
-        access_token_secret = os.environ['TWITTER_ACCESS_TOKEN_SECRET']
-        return Twython(consumer_key, consumer_secret,
-                       access_token, access_token_secret)
+        CONSUMER_KEY = os.environ['TWITTER_CONSUMER_KEY']
+        CONSUMER_SECRET = os.environ['TWITTER_CONSUMER_SECRET']
+        ACCESS_TOKEN = os.environ['TWITTER_ACCESS_TOKEN']
+        ACCESS_TOKEN_SECRET = os.environ['TWITTER_ACCESS_TOKEN_SECRET']
 
-    
+        auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+        auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+        return tweepy.API(auth)
+
+
     def compose_status(self, item):
         return self.message.format(
             air_temp=item['temp'],
