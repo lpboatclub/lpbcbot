@@ -14,8 +14,8 @@
 
 3\. Download lpbcbot project
 
-    `git clone https://github.com/mikeblum/lpbcbot.git`
-
+    git clone https://github.com/lpboatclub/lpbcbot.git
+    
 4\. Configure virtualenv
 
     `virtualenv . && source ./bin/activate`
