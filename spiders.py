@@ -5,7 +5,7 @@ import unicodedata
 import scrapy
 from datetime import datetime
 
-RAW_OPEN_WEATHER_URL = 'http://api.openweathermap.org/data/2.5/weather?zip=60614,us&units=Imperial&APPID=%s'
+RAW_OPEN_WEATHER_URL = 'http://api.openweathermap.org/data/2.5/weather?lat=41.923618&lon=-87.631961&units=Imperial&APPID=%s'
 
 class NOAASpider(scrapy.Spider):
     name = 'noaaspider'
